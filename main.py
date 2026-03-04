@@ -1,11 +1,28 @@
 import telebot
+import os
 
-TOKEN = "8631434820:AAH-AH_dPDZGwhucsQAjLQihO9yR52Dw_8s"
+TOKEN = os.environ.get("TOKEN")
 
 bot = telebot.TeleBot(TOKEN)
 
+users = {}
+
 @bot.message_handler(commands=['start'])
 def start(message):
-    bot.reply_to(message, "مرحبا بك في لعبة الكنز 👑🔥")
+    user_id = message.from_user.id
+    
+    if user_id not in users:
+        users[user_id] = 100
+    
+    bot.reply_to(message, f"🔥 مرحبا بك في لعبة الكنز!\n💰 رصيدك: {users[user_id]}$")
+
+@bot.message_handler(commands=['balance'])
+def balance(message):
+    user_id = message.from_user.id
+    
+    if user_id in users:
+        bot.reply_to(message, f"💰 رصيدك الحالي: {users[user_id]}$")
+    else:
+        bot.reply_to(message, "استعمل /start أولاً")
 
 bot.infinity_polling()
